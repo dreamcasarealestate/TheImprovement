@@ -1,67 +1,85 @@
-import Image from 'next/image'
-import Link from 'next/link'
-import React from 'react'
+import Image from "next/image";
+import React from "react";
+import { FaRulerCombined } from "react-icons/fa";
 
 export interface IOurProjectsProps {
-  heading: string,
+  heading: string;
+  subheading?: string;
   projects: Array<{
-    imageUrl: string,
-    title: string,
-    descriptionPoints: Array<string>,
-    cta?: { href: string, label: string }
-  }>
+    imageUrl: string;
+    title: string;
+    descriptionPoints: Array<string>;
+    category?: string;
+    area?: string;
+  }>;
 }
 
 export const OurProjects = ({
-  heading, projects
+  heading,
+  subheading,
+  projects,
 }: IOurProjectsProps) => {
   return (
-    <div className='px-3 md:px-6'>
-      <h1 className='text-center px-5 text-[20px] font-Gordita-Medium md:text-[24px] md:leading-[34.2px] mb-6 md:mb-16'>
-        {
-          heading
-        }
-      </h1>
+    <div className="px-3 md:px-6 md:py-10 py-5 bg-gradient-to-b from-white to-gray-50">
+      <div className="text-center max-w-3xl mx-auto md:mb-10 mb-5">
+        <h1 className="font-Gordita-Bold text-[18px] md:text-[24px] lg:text-[26px] text-[#212227] md:mb-4 mb-2 leading-tight">
+          {heading}
+        </h1>
+        {subheading && (
+          <p className="text-[14px] font-Gordita-Medium md:text-[16px] text-gray-600 leading-relaxed px-4">
+            {subheading}
+          </p>
+        )}
+        <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-yellow-400 mx-auto mt-4 rounded-full"></div>
+      </div>
 
-      <div className='grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 justify-between gap-x-5 gap-y-10'>
-        {
-          projects.map((project, index) => {
-            return (
-              <div key={`${project.imageUrl}-${index}-${project.cta?.href}-${project.cta?.label}-${project.title}`} className='max-w-[451px] rounded-lg border border-[#DBDBDB] p-2 md:p-4'>
-                <div className='relative w-full md:min-h-[259px] min-h-[130px] md:mb-6 mb-3'>
-                  <Image src={project.imageUrl} alt={``} fill className='absolute' />
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6 max-w-7xl mx-auto">
+        {projects.map((project, index) => (
+          <div
+            key={`${project.imageUrl}-${index}-${project.title}`}
+            className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 flex flex-col p-2 border border-gray-200"
+          >
+            <div className="relative w-full rounded-[4px] md:rounded-[10px] h-[140px] md:h-[150px] overflow-hidden bg-gray-100">
+              <Image
+                src={project.imageUrl}
+                alt={project.title}
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+
+              {project.category && (
+                <div className="absolute top-2 left-2 z-10">
+                  <span className="px-2 py-1 bg-white/90 backdrop-blur-sm rounded-full md:text-xs text-[12px] font-Godriat-Medium text-gray-700 shadow">
+                    {project.category}
+                  </span>
                 </div>
-                <h2 className='font-Gordita-Medium md:text-[20px] text-[14px] md:leading-[28.5px] mb-2 md:mb-4'>{
-                  project.title
-                }</h2>
-                <ul>
-                  {
-                    project.descriptionPoints.map((desc, index) => {
-                      return (
-                        <li key={`disc-${desc}-${index}`} className='text-sm mb-[2px] md:text-base md:leading-[22.8px]'>
-                          {
-                            desc
-                          }
-                        </li>
-                      )
-                    })
-                  }
-                </ul>
-                {
-                  project.cta && (
-                    <Link href={project.cta.href} className='text-[#3586FF] md:text-[16px] text-[12px] font-Gordita-Medium mt-7 md:mt-10 block'>
-                      {
-                        project.cta.label
-                      }
-                    </Link>
-                  )
-                }
+              )}
+            </div>
 
+            {/* Content */}
+            <div className="p-3 flex-1 flex flex-col">
+              <h2 className="font-Gordita-Medium text-[14px] md:text-[16px] text-[#212227] mb-1 group-hover:text-blue-600 transition-colors duration-300">
+                {project.title}
+              </h2>
+
+              <div className="flex flex-col font-Gordita-Regular gap-1 mb-2 text-[12px] md:text-[14px] text-gray-700 leading-relaxed">
+                {project.descriptionPoints.map((desc, idx) => (
+                  <p key={`desc-${idx}`}>{desc}</p>
+                ))}
               </div>
-            )
-          })
-        }
+
+              {project.area && (
+                <div className="mt-auto flex items-center gap-2 text-gray-800 font-Gordita-Medium">
+                  <FaRulerCombined className="text-blue-600 w-4 h-4 flex-shrink-0" />
+                  <span className="text-[12px] md:text-[13px]">
+                    {project.area}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
-  )
-}
+  );
+};

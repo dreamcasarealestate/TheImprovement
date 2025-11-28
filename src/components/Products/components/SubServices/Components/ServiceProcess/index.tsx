@@ -143,11 +143,9 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
     //   </div>
     // </div>
     <section className="relative md:py-10 py-8 md:px-6 px-4 bg-gradient-to-b from-white to-[#f8faff] overflow-hidden">
-      
       <div className="absolute top-[-100px] left-[-100px] w-[400px] h-[400px] bg-[#0052CC]/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-[-150px] right-[-100px] w-[500px] h-[500px] bg-[#3586FF]/10 rounded-full blur-3xl"></div>
 
-     
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -155,18 +153,18 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
         className="flex flex-col gap-3 items-center justify-center mb-12 text-center relative z-10"
       >
         <div className="relative">
-          <h1 className="font-Gordita-Medium md:text-[25px] text-[20px] text-center">
+          <h1 className="font-Gordita-Bold text-[18px] md:text-[24px] lg:text-[26px] text-[#212227] md:mb-4 mb-2 leading-tight">
             {title}
           </h1>
-          <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 w-20 h-[3px] bg-gradient-to-r from-[#0052CC] to-[#3586FF] rounded-full"></div>
+         
         </div>
-        <h2 className="font-Gordita-Medium md:text-[20px] text-[18px] text-[#7B7C83] text-center">
+        <h2 className="text-[14px] font-Gordita-Medium md:text-[16px] text-gray-600 leading-relaxed px-4">
           {subTitle}
         </h2>
+        <div className="w-24 h-1 bg-gradient-to-r from-blue-600 to-yellow-400 mx-auto mt-4 rounded-full"></div>
       </motion.div>
 
-      
-      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10 relative z-10">
+      <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mt-10 relative z-10">
         {steps.map((step, index) => (
           <motion.div
             key={index}
@@ -175,15 +173,11 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
             transition={{ delay: index * 0.15, duration: 0.6 }}
             className="relative group"
           >
-           
             {index < steps.length - 1 && (
               <div className="hidden lg:block absolute top-1/2 -right-6 w-12 h-[2px] bg-gradient-to-r from-[#0052CC] to-[#3586FF] opacity-40 group-hover:opacity-100 transition-opacity duration-300"></div>
             )}
 
-            
             <div className="relative bg-white/90 border border-gray-200/60 p-6 rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 group-hover:border-[#3586FF]/40 group-hover:translate-y-[-6px] flex flex-col items-center text-center backdrop-blur-sm">
-              
-            
               <div className="absolute -top-5 right-6">
                 <div className="bg-gradient-to-r from-[#0052CC] to-[#3586FF] text-white px-4 py-2 rounded-xl shadow-lg font-Gordita-Medium text-sm relative">
                   {step.step}
@@ -191,7 +185,6 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
                 </div>
               </div>
 
-             
               <div className="relative mb-6">
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0052CC] to-[#3586FF] blur-xl opacity-30 group-hover:opacity-70 transition-all duration-500"></div>
                 <div className="relative w-24 h-24 bg-white rounded-full border border-gray-100 flex items-center justify-center shadow-sm group-hover:shadow-lg transition-all duration-500">
@@ -205,7 +198,6 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
                 </div>
               </div>
 
-             
               <h3 className="font-Gordita-Bold text-[20px] text-gray-900 mb-2 group-hover:text-[#0052CC] transition-colors duration-300">
                 {step.title}
               </h3>
@@ -217,7 +209,6 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
         ))}
       </div>
 
-      
       <div className="block md:hidden max-w-[390px] mx-auto mt-1 relative z-10">
         <Slider ref={sliderRef} {...sliderSettings}>
           {steps.map((step, index) => (
@@ -229,7 +220,6 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
               className="px-2 pb-6"
             >
               <div className="relative bg-white/90 border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 flex flex-col items-center text-center p-3 backdrop-blur-sm">
-              
                 <div className="absolute top-1 right-4">
                   <div className="bg-gradient-to-r from-[#0052CC] to-[#3586FF] text-white px-4 py-1.5 rounded-lg shadow-md font-Gordita-Medium text-xs relative">
                     {step.step}
@@ -237,7 +227,6 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
                   </div>
                 </div>
 
-               
                 <div className="relative mb-4">
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-[#0052CC] to-[#3586FF] blur-lg opacity-30"></div>
                   <div className="relative w-16 h-16 bg-white rounded-full border border-gray-200 flex items-center justify-center shadow-sm">
@@ -251,7 +240,6 @@ const ServiceProcess: React.FC<ServiceProcessProps> = ({
                   </div>
                 </div>
 
-                
                 <h3 className="font-Gordita-Bold text-[16px] text-gray-900 mb-2">
                   {step.title}
                 </h3>
