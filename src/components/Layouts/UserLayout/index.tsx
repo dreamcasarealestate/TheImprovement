@@ -16,6 +16,7 @@ import { usePopper } from "react-popper";
 import Avatar from "@/components/Avatar";
 import { DropDown } from "@/common/PopOver";
 import { IoMdNotificationsOutline } from "react-icons/io";
+import { LuUsers } from "react-icons/lu";
 import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en";
 import Button from "@/common/Button";
@@ -74,42 +75,27 @@ function UserLayout({
       icon: <FiUser className="text-[18px]" />,
       isActive: router.asPath.startsWith("/user/profile"),
     },
-    {
-      name: "Properties",
-      link: "/user/properties",
-      icon: <FaHome className="text-[18px]" />,
-      isActive: router.asPath.startsWith("/user/properties"),
+     {
+      name: "CRM",
+      link: "/user/crm",
+      icon: <LuUsers className="text-[18px]" />,
+      isActive: router.asPath.startsWith("/user/crm"),
     },
-    {
-      name: "Wishlist",
-      link: "/user/wishlist",
-      icon: <FiHeart className="text-[18px]" />,
-      isActive: router.pathname === "/user/wishlist",
-    },
+   
     {
       name: "Custom builder",
       link: "/user/custom-builder",
       icon: <FiTool className="text-[18px]" />,
       isActive: router.asPath.startsWith("/user/custom-builder"),
     },
-    {
-      name: "Company Property",
-      link: "/user/company-property",
-      icon: <FaBuilding className="text-[18px]" />,
-      isActive: router.pathname === "/user/company-property",
-    },
+   
     {
       name: "Testimonials",
       link: "/user/testimonials",
       icon: <MdReviews className="text-[18px]" />,
       isActive: router.pathname === "/user/testimonials",
     },
-    {
-      name: "Referral Progress",
-      link: "/user/referralprogress",
-      icon: <LuCheckCircle className="text-[18px]" />,
-      isActive: router.pathname === "/user/referralprogress",
-    },
+    
   ];
 
   const logo_place_holder = {

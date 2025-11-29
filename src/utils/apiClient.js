@@ -68,6 +68,8 @@ const URLS = {
   s3bucket: `${base_url}s3bucket`,
   referrals:`${base_url}referrals`,
    contact_us:`${base_url}contact-us`,
+   whatsappSend: `${base_url}send-whatsapp`,
+    roles: `${base_url}roles`,
 };
 
 const getResponseBody = (response) => {
