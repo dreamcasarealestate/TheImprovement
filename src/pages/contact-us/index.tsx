@@ -25,7 +25,7 @@ const TOPICS: { key: TopicKey; label: string; blurb: string; icon: string }[] =
       key: "careers",
       label: "Joining Our Team",
       blurb:
-        "We're building the OneCasa platform across real estate & home services. Share your profile and interests.",
+        "We're building the TheImprovement platform across real estate & home services. Share your profile and interests.",
       icon: "👥",
     },
     {
@@ -130,16 +130,16 @@ function ContactUs() {
   return (
     <>
       <SEO
-        title="Contact OneCasa • Real Estate, Interiors & Home Services"
-        description="Get in touch with OneCasa for property listings, interiors, custom construction, and support. Share your project or query and we'll reach out."
-        keywords="OneCasa contact, property inquiry, interiors contact, construction contact, Hyderabad real estate"
+        title="Contact TheImprovement • Real Estate, Interiors & Home Services"
+        description="Get in touch with TheImprovement for property listings, interiors, custom construction, and support. Share your project or query and we'll reach out."
+        keywords="TheImprovement contact, property inquiry, interiors contact, construction contact, Hyderabad real estate"
         breadcrumbs={[
-          { name: "Home", item: "https://www.onecasa.in/" },
-          { name: "Contact Us", item: "https://www.onecasa.in/contact-us" },
+          { name: "Home", item: "https://www.TheImprovement.in/" },
+          { name: "Contact Us", item: "https://www.TheImprovement.in/contact-us" },
         ]}
         faq={[
           {
-            question: "What's the best way to contact OneCasa?",
+            question: "What's the best way to contact TheImprovement?",
             answer: "You can reach us via phone at +918897574909, through our contact form, or by visiting our office in Hyderabad during business hours."
           }
         ]}
@@ -160,7 +160,7 @@ function ContactUs() {
       <section className="relative overflow-hidden min-h-screen lg:min-h-[92vh]">
         <Image
           src="/images/contact-us-form.png"
-          alt="Contact OneCasa"
+          alt="Contact TheImprovement"
           fill
           priority
           className="object-cover"
@@ -241,11 +241,11 @@ function ContactUs() {
                     <span>+91 8897574909</span>
                   </a>
                   <a
-                    href="mailto:hello@onecasa.in"
+                    href="mailto:hello@TheImprovement.in"
                     className="flex items-center gap-2 text-white/90 hover:text-white transition-colors text-sm "
                   >
                     <span className="label-text">📧</span>
-                    <span>sales@onecasa.in</span>
+                    <span>sales@TheImprovement.in</span>
                   </a>
                   <a
                     href="https://api.whatsapp.com/send/?phone=918897574909&text&type=phone_number&app_absent=0"
@@ -439,7 +439,7 @@ function ContactUs() {
 
                     <div className="mt-6 md:mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 pt-5 md:pt-6 border-t border-gray-200">
                       <p className="text-[12px] text-gray-600 text-center sm:text-left max-w-[300px]">
-                        By submitting, you agree to be contacted about OneCasa
+                        By submitting, you agree to be contacted about TheImprovement
                         services. We respect your privacy.
                       </p>
                       <Button
@@ -503,13 +503,13 @@ function ContactUs() {
                     </div>
                   </a>
                   <a
-                    href="mailto:hello@onecasa.in"
+                    href="mailto:hello@TheImprovement.in"
                     className="flex items-center gap-3 text-white/90 hover:text-white transition-colors p-3 bg-white/5 rounded-lg"
                   >
                     <span className="text-2xl">✉️</span>
                     <div>
                       <p className="font-Gordita-Medium">Email us</p>
-                      <p className="text-sm">hello@onecasa.in</p>
+                      <p className="text-sm">hello@TheImprovement.in</p>
                     </div>
                   </a>
                   <a

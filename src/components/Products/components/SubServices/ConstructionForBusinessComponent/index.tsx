@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import CommonTheWayWeWork, {
   ICommonTheWayWeWorkProps,
 } from "../Components/CommonTheWayWeWork";
@@ -7,13 +7,16 @@ import { ITagsProps, Tags } from "../Components/Tags";
 import TestimonialsSection, {
   ITestimonialsSectionProps,
 } from "../Components/TestimonialsSection";
+import ServiceProcess, {
+  ServiceProcessProps,
+} from "../Components/ServiceProcess";
 import { RoutebreadCrumbs } from "@/components/RouteBreadCrumbs";
 import BlogCard from "@/components/BlogCard";
 import apiClient from "@/utils/apiClient";
 import BreadCrumb from "../../BreadCrumb";
 import Button from "@/common/Button";
 import MobileBlogCard from "@/components/MobileBlogCard";
-import GoogleAdSense from "@/components/GoogleAdSense";
+import HeroSection, { IHerosectionprops } from "./Herosection";
 
 const testimonialsData: ITestimonialsSectionProps = {
   words: [
@@ -40,77 +43,123 @@ const testimonialsData: ITestimonialsSectionProps = {
   ],
 };
 
-const theWayWeWorkData: ICommonTheWayWeWorkProps = {
-  heading: "The Way We Work",
-  subHeading: "We help you at every step of your house construction journey.",
+export const serviceProcessData: ServiceProcessProps = {
+  title: "The Way We Work",
+  subTitle:
+    "We guide you through every step of your house construction journey, ensuring quality, transparency, and timely delivery.",
   steps: [
     {
-      stepIcon: "/icons/custom-builder/subservices/expand.svg",
-      stepname: "Explain your need",
+      step: "01",
+      title: "Explain Your Need",
+      description:
+        "Share your vision and requirements with our experts so we can understand your dream home in detail.",
+      icon: "/icons/custom-builder/subservices/expand.svg",
     },
     {
-      stepIcon: "/icons/custom-builder/subservices/house-cost.svg",
-      stepname: "Cost & Planning",
+      step: "02",
+      title: "Cost & Planning",
+      description:
+        "We provide a detailed plan and transparent cost estimate, helping you make informed decisions with no hidden charges.",
+      icon: "/icons/custom-builder/subservices/house-cost.svg",
     },
     {
-      stepIcon: "/icons/custom-builder/subservices/execution.svg",
-      stepname: "Work Execution",
+      step: "03",
+      title: "Work Execution",
+      description:
+        "Our skilled team brings your project to life with precise execution, regular updates, and strict quality control.",
+      icon: "/icons/custom-builder/subservices/execution.svg",
     },
     {
-      stepIcon: "/icons/custom-builder/subservices/delivery-service.svg",
-      stepname: "Delivery",
+      step: "04",
+      title: "Delivery",
+      description:
+        "We hand over your completed home on time, ensuring everything matches your expectations and standards.",
+      icon: "/icons/custom-builder/subservices/delivery-service.svg",
     },
   ],
 };
 
 const ourProjects: IOurProjectsProps = {
-  heading: "Our Projects",
+  heading: "Featured Projects",
+  subheading:
+    "Explore our portfolio of exceptional construction projects that showcase our commitment to quality, innovation, and client satisfaction",
   projects: [
     {
       imageUrl: "/images/custombuilder/subservices/project-image.png",
-      title: "Residential Construction Project",
-      descriptionPoints: ["CBD, Bengaluru"],
-    },
-
-    {
-      imageUrl: "/images/custombuilder/subservices/project-image.png",
-      title: "Residential Construction Project",
-      descriptionPoints: ["CBD, Bengaluru"],
+      title: "Luxury Residential Complex",
+      descriptionPoints: [
+        "A premium residential complex in CBD, Bengaluru with modern layouts and city views.",
+      ],
+      category: "Residential",
+      area: "25,000 sq.ft",
     },
     {
       imageUrl: "/images/custombuilder/subservices/project-image.png",
-      title: "Residential Construction Project",
-      descriptionPoints: ["CBD, Bengaluru"],
+      title: "Modern Corporate Office",
+      descriptionPoints: [
+        "State-of-the-art corporate office in Whitefield, Bengaluru designed for productivity and innovation.",
+      ],
+      category: "Commercial",
+      area: "45,000 sq.ft",
+    },
+    {
+      imageUrl: "/images/custombuilder/subservices/project-image.png",
+      title: "Boutique Hotel & Spa",
+      descriptionPoints: [
+        "Luxury boutique hotel in Electronic City, Bengaluru with spa and rooftop views.",
+      ],
+      category: "Hospitality",
+      area: "35,000 sq.ft",
     },
   ],
 };
 
 const categoriesdata: ITagsProps = {
-  heading: "Categories",
+  heading: "Our Construction Expertise",
+  subheading:
+    "Specialized building solutions tailored to your unique needs. With over 15 years of experience, we deliver exceptional quality across all project types.",
   tags: [
     {
       imageUrl: "/images/custombuilder/subservices/category-image.png",
       name: "Retail & Commercial Building",
+      description:
+        "Modern commercial spaces designed for business growth, customer engagement, and long-term value with innovative architectural solutions.",
+      projectCount: 45,
     },
     {
-      imageUrl: "/images/custombuilder/subservices/category-image.png",
+      imageUrl: "/images/services/business-residential.png",
       name: "Showroom/Retail Outlet",
+      description:
+        "Strategic retail environments that enhance brand presence, drive foot traffic, and create memorable shopping experiences for customers.",
+      projectCount: 38,
     },
     {
-      imageUrl: "/images/custombuilder/subservices/category-image.png",
+      imageUrl: "/images/custombuilder/tried/sub-contract.png",
       name: "Corporate Office",
+      description:
+        "Productive workspace solutions that foster collaboration, innovation, and employee well-being with smart office design principles.",
+      projectCount: 52,
     },
     {
       imageUrl: "/images/custombuilder/subservices/category-image.png",
       name: "Hotel/Resort",
+      description:
+        "Luxury hospitality spaces that combine comfort, functionality, and aesthetic appeal to create unforgettable guest experiences.",
+      projectCount: 28,
     },
     {
       imageUrl: "/images/custombuilder/subservices/category-image.png",
       name: "Hospital Building",
+      description:
+        "Healthcare facilities built with precision, incorporating advanced medical technologies and patient-centered design principles.",
+      projectCount: 15,
     },
     {
       imageUrl: "/images/custombuilder/subservices/category-image.png",
-      name: "Farm/ Guest House",
+      name: "Farm/Guest House",
+      description:
+        "Serene retreats and functional farm structures that harmonize with natural surroundings while providing modern comfort and utility.",
+      projectCount: 22,
     },
   ],
 };
@@ -143,20 +192,43 @@ const ConstructionForBusinessComponent = () => {
   const handleshowall = () => {
     setShowAll(!showAll);
   };
+  const Ref = useRef<HTMLDivElement>(null);
+
+  const handleScrollToDown = () => {
+    if (Ref.current) {
+      Ref.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  const HeroSectionData: IHerosectionprops = {
+    bgimage:
+      "https://cdn.pixabay.com/photo/2016/11/29/03/53/building-1867187_1280.jpg",
+    heading: "Construction",
+    heading2: "Services",
+    subheading: "Building Strong Foundations for Your Future",
+
+    descriptions:
+      "From residential projects to large-scale commercial developments, we deliver high-quality construction solutions with precision, safety, and reliability.",
+
+    btntext: "Explore Services",
+    overlaystyle: "bg-yellow-800/40",
+    overlaycolor: {},
+  };
+
   return (
     <div>
+      <HeroSection
+        {...HeroSectionData}
+        onScrollToPackages={handleScrollToDown}
+      />
       <div className="mb-[35px] md:mb-[64px]">
         <Tags {...categoriesdata} />
       </div>
       <div className="mb-[35px] md:mb-[64px]">
         <OurProjects {...ourProjects} />
       </div>
-      <div className="md:px-8 px-3 mb-[45px] max-w-[98%] mx-auto md:mb-[64px] flex flex-col items-center gap-4">
-        <GoogleAdSense />
-      </div>
 
       <div className="mb-[35px] md:mb-[64px]">
-        <CommonTheWayWeWork {...theWayWeWorkData} />
+        <ServiceProcess {...serviceProcessData} />{" "}
       </div>
       <div className="mb-[35px] md:mb-[64px]">
         <TestimonialsSection {...testimonialsData} />

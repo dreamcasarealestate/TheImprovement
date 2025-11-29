@@ -12,7 +12,7 @@ function Home({ initialBlogs }: { initialBlogs: any[] }) {
       <WelcomeModal />
 
       <SEO
-        title="Construction, Demolition, Flooring, Electrical, Plumbing, HVAC, Roofing, Painting & Exterior Services | heImprovement"
+        title="Construction, Demolition, Flooring, Electrical, Plumbing, HVAC, Roofing, Painting & Exterior Services | TheImprovement"
         description="Get professional home improvement services including construction, demolition, flooring, electrical, plumbing, HVAC, roofing, painting, and driveway & exterior works. Quality service you can trust."
         keywords="Construction Services, Demolition Services, Flooring Services, Electrical Repairs, Plumbing Services, HVAC Services, Roofing Solutions, Painting Contractors, Exterior Works, Home Improvement"
         imageUrl="https://www.heImprovement.in/images/logobb.png"

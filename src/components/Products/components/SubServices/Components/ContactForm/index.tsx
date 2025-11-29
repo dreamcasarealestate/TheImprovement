@@ -7,30 +7,28 @@ import { MdSupportAgent } from "react-icons/md";
 import toast from "react-hot-toast";
 // import { serviceOptions } from "@/utils/solar/solar-data";
 import Modal from "@/common/Modal";
- enum ServiceCategory {
-  RealEstate = "RealEstate",
-  Interiors = "Interiors",
-  CustomBuilder = "CustomBuilder",
-  Solar = "Solar",
-  PackersAndMovers = "PackersAndMovers",
+  enum ServiceCategory {
+  Construction = "Construction",
+  Demolition = "Demolition",
+  Flooring = "Flooring",
+  Electrical = "Electrical",
+  Plumbing = "Plumbing",
+  HVAC = "HVAC",
+  Roofing = "Roofing",
   Painting = "Painting",
-  Plumber = "Plumber",
-  EarthMovers = "EarthMovers",
-  HomeDecor = "HomeDecor",
-  Furniture = "Furniture",
-  CivilEngineeringDesign = "CivilEngineeringDesign",
-  VaastuConsultation = "VaastuConsultation",
+  Exteriors = "Exteriors",
 }
+
  const serviceOptions = [
-  { id: 1, service: ServiceCategory.CustomBuilder },
-  { id: 2, service: ServiceCategory.RealEstate },
-  { id: 3, service: ServiceCategory.Interiors, disabled: true },
-  { id: 4, service: ServiceCategory.Furniture },
-  { id: 5, service: ServiceCategory.Plumber },
-  { id: 6, service: ServiceCategory.Painting },
-  { id: 7, service: ServiceCategory.VaastuConsultation },
-  { id: 8, service: ServiceCategory.CivilEngineeringDesign },
-  { id: 9, service: ServiceCategory.Solar },
+  { id: 1, service: ServiceCategory.Construction },
+  { id: 2, service: ServiceCategory.Demolition },
+  { id: 3, service: ServiceCategory.Flooring },
+  { id: 4, service: ServiceCategory.Electrical },
+  { id: 5, service: ServiceCategory.Plumbing },
+  { id: 6, service: ServiceCategory.HVAC },
+  { id: 7, service: ServiceCategory.Roofing },
+  { id: 8, service: ServiceCategory.Painting },
+  { id: 9, service: ServiceCategory.Exteriors },
 ];
 
 const ContactForm = ({
