@@ -1,262 +1,661 @@
-import CustomTable from '@/common/CustomTable';
-import Drawer from '@/common/Drawer';
-import CustomInput from '@/common/FormElements/CustomInput';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
-import { DashboardTable } from '@/common/DashBoardTable';
-import CustomForm, { ICustomFormProps } from '@/common/FormElements';
-import apiClient from '@/utils/apiClient';
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Drawer from "@/common/Drawer";
+import CustomInput from "@/common/FormElements/CustomInput";
+import SingleSelect from "@/common/FormElements/SingleSelect";
+import FileInput from "@/common/FileInput";
+import ReusableSearchFilter from "@/common/SearchFilter";
+import PaginationControls from "./pagination";
+import Button from "@/common/Button";
+import Loader from "../Loader";
 
-interface TestimonailsInterface {
+
+import apiClient from "@/utils/apiClient";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
+import {
+  FaQuoteLeft,
+  FaEdit,
+  FaTrash,
+  FaMapMarkerAlt,
+  FaUser,
+} from "react-icons/fa";
+import toast from "react-hot-toast";
+import ImageUploader from "@/common/FormElements/DragImageInput";
+
+type Testimonial = {
+  id?: number | string;
   name: string;
   content: string;
   userimage?: string;
   rating: number;
   category: string;
   location: string;
-}
+  testimonialImages?: string[];
+  testimonialVideos?: string[];
+};
+
+const CATEGORY_OPTIONS = [
+  { id: 1, category: "furniture" },
+  { id: 2, category: "custom_builder" },
+  { id: 3, category: "interiors" },
+];
+
+const ratingOptions = ["1", "2", "3", "4", "5"];
+
+const badgeCls = "text-[10px] md:px-2 px-1 py-0.5 rounded-full ring-1";
+const catCls = "bg-blue-50 text-blue-700 ring-blue-200";
+const ratingCls = "bg-amber-50 text-amber-700 ring-amber-200";
 
 const TestimonialsView = () => {
   const [openModal, setOpenModal] = useState<boolean>(false);
-  const [allData, setAllData] = useState<Array<any>>([]);
-  const [loading, setLoading] = useState(false);
-  const [testimonials, setTestimonials] = useState<TestimonailsInterface>({
-    name: '',
-    content: '',
-    userimage: '',
+  const [currentpage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+   const session = useSession();
+   const [user, setUser] = useState<any>(null);
+
+  const [testimonial, setTestimonial] = useState<Testimonial>({
+    name: "",
+    content: "",
+    userimage: "",
     rating: 0,
-    category: '',
-    location: '',
+    category: "",
+    location: "",
+    testimonialImages: [],
+    testimonialVideos: [],
   });
-  const [fileval, setFileVal] = useState<string>('');
-  const [updateTestimonialId, setUpdateTestimonialId] = useState<number | string | null | undefined>(undefined);
-  const [originalData, setOriginalData] = useState<any>(null);
 
-  const TableColumns = [
-    { label: 'Name', key: 'name', status: true },
-    { label: 'Content', key: 'content', status: true },
-    { label: 'Category', key: 'category', status: true },
-  ];
+  const [updateId, setUpdateId] = useState<number | string | null | undefined>(
+    undefined
+  );
+  const [allData, setAllData] = useState<Testimonial[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [originalData, setOriginalData] = useState<Testimonial | null>(null);
 
+  
+  useEffect(() => {
+    if (session?.status === "authenticated") {
+      setUser(session.data?.user);
+    }
+  }, [session?.status]);
+
+
+ 
   const handleFormChange = (name: string, value: any) => {
-    setTestimonials((currProp: any) => ({ ...currProp, [name]: value }));
+    setTestimonial((curr: Testimonial) => ({ ...curr, [name]: value }));
   };
-
-  const isDataChanged = (original: any, current: any) => {
-    return JSON.stringify(original) !== JSON.stringify(current);
-  };
-
   const handleUpload = async (url: any) => {
-    setTestimonials((currProp: any) => ({ ...currProp, userimage: url }));
+    setTestimonial((currProp: any) => ({ ...currProp, userimage: url }));
+  };
+  const handleSelectChange = (selectedOption: {
+    id: number;
+    category: string;
+  }) => {
+    setTestimonial({ ...testimonial, category: selectedOption.category });
+  };
+  const handleimageUpload = (
+    key: "testimonialImages" | "testimonialVideos",
+    files: string[]
+  ) => {
+    setTestimonial((prev) => ({
+      ...prev,
+      [key]: [...(prev[key] || []), ...files],
+    }));
   };
 
-
-  const handleReset = () => {
-    setTestimonials({
-      name: '',
-      content: '',
-      userimage: '',
-      rating: 0,
-      category: '',
-      location: '',
-    });
-    setUpdateTestimonialId(undefined);
-  };
+  const isDataChanged = (original: any, current: any) =>
+    JSON.stringify(original) !== JSON.stringify(current);
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
+    setLoading(true);
+    const payload = {
+    name: testimonial.name,
+    content: testimonial.content,
+    userimage: testimonial.userimage,
+    rating: testimonial.rating,
+    category: testimonial.category,
+    location: testimonial.location,
+    testimonialImages: testimonial.testimonialImages,
+    testimonialVideos: testimonial.testimonialVideos,
+    user:user?.id,
+  };
 
-    if (updateTestimonialId && !isDataChanged(originalData, testimonials)) {
-      console.log('No changes detected, skipping patch API call.');
+    if (updateId && !isDataChanged(originalData, testimonial)) {
       setOpenModal(false);
       return;
     }
+
     try {
       let res: any;
-      if (!updateTestimonialId) {
-        res = await apiClient.post(apiClient.URLS.testimonials, { ...testimonials });
+      if (!updateId) {
+        res = await apiClient.post(
+          apiClient.URLS.testimonials,
+        payload,
+          true
+        );
       } else {
-        res = await apiClient.patch(`${apiClient.URLS.testimonials}/${updateTestimonialId}`, {
-
-          ...testimonials,
-        });
+        res = await apiClient.patch(
+          `${apiClient.URLS.testimonials}/${updateId}`,
+          { id: updateId, ...payload },
+          true
+        );
       }
 
       if (res) {
         await fetchTestimonials();
         setOpenModal(false);
-        setUpdateTestimonialId(undefined);
+        toast.success(
+          updateId
+            ? "Testimonial updated successfully!"
+            : "Testimonial added successfully!"
+        );
+        setUpdateId(undefined);
+        handleReset(e);
       }
-    } catch (error) {
-      console.error('Error during form submission:', error);
-    }
-  };
-
-  const handleEditRow = async (row: any) => {
-    const rowId = row.id;
-    if (!rowId) return;
-
-    setOpenModal(true);
-    try {
-      const res = await apiClient.get(`${apiClient.URLS.testimonials}/${rowId}`);
-      if (res?.body) {
-        const testimonialData =
-        {
-          name: res?.body?.name,
-          content: res?.body?.content,
-          userimage: res?.body?.userimage,
-          rating: res?.body?.rating,
-          category: res?.body?.category,
-          location: res?.body?.location,
-        };
-
-        setTestimonials(testimonialData);
-        setOriginalData(testimonialData);
-        setUpdateTestimonialId(rowId);
-      }
-    } catch (error) {
-      console.error('Failed to fetch testimonial details:', error);
-    }
-  };
-
-  const fetchTestimonials = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await apiClient.get(apiClient.URLS.testimonials,
-        {
-        }
-      );
-      if (res?.body && Array.isArray(res.body)) {
-        setAllData(res.body);
-      }
+    } catch (err) {
+      console.error("Error saving testimonial: ", err);
+      toast.error("Failed to save testimonial!");
+    } finally {
       setLoading(false);
+    }
+  };
+
+  const handleReset = (e?: any) => {
+    if (e) e.preventDefault();
+    setTestimonial({
+      name: "",
+      content: "",
+      userimage: "",
+      rating: 0,
+      category: "",
+      location: "",
+      testimonialImages: [],
+      testimonialVideos: [],
+    });
+    setOpenModal(false);
+    setUpdateId(undefined);
+    setOriginalData(null);
+  };
+  const pretty = (s: string) =>
+  s.split("_").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+
+ const filtersConfig = [
+  {
+    groupLabel: "Category",
+    key: "category",
+    options: CATEGORY_OPTIONS.map(c => ({
+      id: c.category.toLowerCase(),  
+      label: pretty(c.category)
+    })),
+  },
+  {
+    groupLabel: "Rating",
+    key: "rating",
+    options: ratingOptions.map(r => ({
+      id: String(r),                  
+      label: String(r),
+    })),
+  },
+] as const;
+
+
+  
+  const fetchTestimonials = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await apiClient.get(apiClient.URLS.testimonials, {}, true);
+      setAllData(Array.isArray(res?.body) ? res.body : []);
     } catch (error) {
-      console.error('Failed to fetch testimonials:', error);
+      console.error("Failed to fetch testimonials: ", error);
+      toast.error("Failed to fetch testimonials");
+    } finally {
       setLoading(false);
     }
   }, []);
 
-  const customFormDataProps: ICustomFormProps = {
-    rootCls: 'mb-14',
+  const handleDelete = async (id: number | string) => {
+    setLoading(true);
+    try {
+      const res = await apiClient.delete(
+        `${apiClient.URLS.testimonials}/${id}`,
+        true
+      );
+      if (res.status === 200) {
+        setAllData((prev: any) => prev.filter((t: any) => t.id !== id));
+        toast.success("Deleted successfully");
+      } else {
+        toast.error("Failed to delete testimonial");
+      }
+    } catch (error) {
+      console.error("Failed to delete testimonial", error);
+      toast.error("Failed to delete testimonial");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    headingCls: 'text-gray-700 text-xl md:text-2xl pl-10 font-Gordita-Bold',
-    subHeadingCls: 'text-red-500 font-Gordita-Light text-[12px] pl-10',
-    subHeading: 'All are required fields',
-    inputArr: [
-      {
-        name: 'name',
-        id: 'name',
-        placeholder: 'Enter name',
-        value: testimonials.name,
-        label: 'Name',
-        type: 'text',
-        onChange: (e: any) => handleFormChange(e?.target?.name ?? '', e?.target?.value ?? ''),
-      },
-      {
-        name: 'content',
-        id: 'content',
-        placeholder: 'Enter content',
-        value: testimonials.content,
-        label: 'Testimonial Content',
-        type: 'textarea',
-        rootCls: 'col-span-full',
-        className: 'min-h-[100px]',
-        onChange: (e: any) => handleFormChange(e?.target?.name ?? '', e?.target?.value ?? ''),
-      },
-      {
-        name: 'userimage',
-        initialFileUrl: testimonials?.userimage,
-        label: 'User Image',
-        type: 'file',
-        onFileChange: (e: any) => handleUpload(e),
-      },
-      {
-        name: 'rating',
-        id: 'rating',
-        placeholder: 'Enter rating',
-        value: testimonials.rating,
-        label: 'Rating',
-        type: 'number',
-        min: 1,
-        max: 5,
-        onChange: (e: any) => handleFormChange(e?.target?.name ?? '', parseFloat(e?.target?.value) || 0),
-      },
-      {
-        name: 'category',
-        id: 'category',
-        label: 'Category',
-        selectedOption: testimonials.category,
-        type: 'single-select',
-        handleChange: handleFormChange,
-        optionsInterface: { isObj: false },
-        options: ['furniture', 'Interiors', 'Residential Construction', 'Construction for Business', 'General'],
-      },
-      {
-        name: 'location',
-        id: 'location',
-        placeholder: 'Enter location',
-        value: testimonials.location,
-        label: 'Location',
-        type: 'text',
-        onChange: (e: any) => handleFormChange(e?.target?.name ?? '', e?.target?.value ?? ''),
-      },
-    ],
-    inputCls: 'grid-cols-2 gap-x-16 px-10',
-    btns: [
-      <button
-        key={'cancelButton'}
-        className="text-slate-700 px-3 py-2 rounded-md bg-slate-100 mr-3 border border-slate-700"
-        type="button"
-        onClick={handleReset}
-      >
-        Cancel
-      </button>,
-      <button
-        key={'submitButton'}
-        className="text-slate-100 px-3 py-2 rounded-md bg-slate-700 mr-3"
-        type="button"
-        onClick={handleSubmit}
-      >
-        Submit
-      </button>,
-    ],
-    btnsCls: 'mt-10 px-10',
+  const handleEdit = async (row: Testimonial) => {
+    try {
+      setLoading(true);
+      const id = row.id;
+      if (!id) return;
+      const res = await apiClient.get(
+        `${apiClient.URLS.testimonials}/${id}`,
+        {},
+        true
+      );
+      const t = res?.body as Testimonial;
+      setTestimonial({
+        name: t?.name ?? "",
+        content: t?.content ?? "",
+        userimage: t?.userimage ?? "",
+        rating: Number(t?.rating ?? 0),
+        category: t?.category ?? "",
+        location: t?.location ?? "",
+        testimonialImages: t?.testimonialImages ?? [],
+        testimonialVideos: t?.testimonialVideos ?? [],
+      });
+      setUpdateId(id);
+      setOriginalData(t);
+      setOpenModal(true);
+    } catch (error) {
+      console.error("Failed to edit testimonial: ", error);
+      toast.error("Failed to open testimonial");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchTestimonials();
   }, [fetchTestimonials]);
 
+ 
+  type FiltersState = { [key: string]: Record<string, boolean> };
+  const [selectedFilters, setSelectedFilters] = useState<FiltersState>({});
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const pickActive = (groupKey: string) =>
+    Object.entries(selectedFilters[groupKey] || {})
+      .filter(([, v]) => Boolean(v))
+      .map(([k]) => k);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, selectedFilters]);
+
+ const filteredData = useMemo(() => {
+  const text = searchQuery.trim().toLowerCase();
+  const activeCats = pickActive("category");   
+  const activeRatings = pickActive("rating");
+
+  return allData.filter(t => {
+    const cat = String(t.category || "").toLowerCase();
+    const matchesText =
+      !text ||
+      t.name?.toLowerCase().includes(text) ||
+      t.content?.toLowerCase().includes(text) ||
+      t.location?.toLowerCase().includes(text) ||
+      cat.includes(text);
+
+    const matchesCat =
+      activeCats.length === 0 || activeCats.includes(cat);
+
+    const matchesRating =
+      activeRatings.length === 0 || activeRatings.includes(String(t.rating));
+
+    return matchesText && matchesCat && matchesRating;
+  });
+}, [allData, searchQuery, selectedFilters]);
 
 
-  const formData = useMemo(() => {
-    const { ref, ...otherFormDataProps } = customFormDataProps;
-    return otherFormDataProps;
-  }, [customFormDataProps]);
+
+  const totalPages = Math.ceil(filteredData.length / pageSize);
+  const displayedData = filteredData.slice(
+    (currentpage - 1) * pageSize,
+    currentpage * pageSize
+  );
+  console.log(displayedData)
+
+  const handlePageChange = (p: number) =>
+    setCurrentPage(Math.max(1, Math.min(p, totalPages)));
+  const handlePageSizeChange = (n: number) => {
+    setPageSize(n);
+    setCurrentPage(1);
+  };
+
+  // ---------- UI ----------
+  if (loading && !openModal) {
+    return (
+      <div className="w-full">
+        <Loader />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-w-full">
-      <DashboardTable
-        TableColumns={TableColumns}
-        data={allData}
-        handleAddData={() => setOpenModal(true)}
-        handleEditRow={handleEditRow}
-      />
+    <div className="min-w-full flex flex-col md:px-10 px-3 gap-y-5">
+    
+      <div className="sticky top-0 z-10">
+        <div className="flex items-center justify-between bg-white/90 backdrop-blur border border-slate-200 shadow-[0_6px_24px_rgba(2,6,23,0.06)] rounded-xl px-5 py-2 mt-[50px]">
+          <div className="flex items-center gap-3">
+            <div className="h-9 w-9 rounded-lg bg-purple-50 text-purple-600 grid place-items-center ring-1 ring-purple-100">
+              <FaQuoteLeft />
+            </div>
+            <div className="heading-text">Testimonials</div>
+          </div>
+        
+            <Button
+              className="flex md:px-5 px-3 md:py-2 py-1 label-text rounded-lg bg-[#3586FF] !font-Gordita-Medium items-center gap-2 text-white shadow-[0_6px_20px_rgba(53,134,255,0.30)] hover:bg-[#2E74E0] active:scale-[.99] transition"
+              onClick={() => setOpenModal(true)}
+              
+            >
+              + Add New
+            </Button>
+         
+        </div>
+      </div>
+
+     
+      <div className="w-full">
+        <ReusableSearchFilter
+          searchText={searchQuery}
+          onSearchChange={setSearchQuery}
+          placeholder="Search by name, content, location, category"
+          filters={filtersConfig as any}
+          selectedFilters={selectedFilters}
+          onFilterChange={setSelectedFilters}
+          rootCls="justify-between "
+          className="py-1 md:py-1"
+        />
+      </div>
+
+      
+      <div className="grid md:gap-5 gap-2 grid-cols-2 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+        {displayedData?.length > 0 &&
+          displayedData.map((t) => (
+            <div
+              key={String(t.id ?? `${t.name}-${t.location}`)}
+              className="
+                group bg-white border border-slate-200 rounded-xl
+                shadow-[0_4px_18px_rgba(2,6,23,0.06)]
+                hover:shadow-[0_10px_30px_rgba(2,6,23,0.12)]
+                transition overflow-hidden
+              "
+            >
+              <div className="relative w-full h-[100px] md:h-[160px] bg-slate-50">
+                {t.userimage ? (
+                  <Image
+                    src={t.userimage}
+                    alt={t.name}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full grid place-items-center text-slate-400">
+                    <FaUser className="md:w-8 w-5 md:h-8 h-5" />
+                  </div>
+                )}
+                
+                 <span className='absolute top-2 right-2 md:text-[12px]  bg-blue-50 text-blue-700 ring-blue-200 font-Gordita-Medium  text-[10px] md:px-2 px-1 py-0.5 rounded-full'>
+                    {t.category || "General"}
+                  </span>
+              </div>
+
+              <div className="p-2 md:p-4 flex flex-col md:gap-2 gap-1">
+                <div className="flex items-center justify-between md:gap-2 gap-1">
+                  <h2 className="md:text-[14px] text-[12px] font-Gordita-Medium text-slate-900 line-clamp-1">
+                    {t.name}
+                  </h2>
+                  <span className={`${badgeCls} ${ratingCls}`}>
+                    ⭐ {t.rating || 0}
+                  </span>
+                </div>
+
+                <p className="text-slate-600 text-[10px] md:text-[13px] font-Gordita-Regular line-clamp-3">
+                  {t.content}
+                </p>
+
+                <div className="flex items-center md:gap-2 gap-1">
+                 
+                  {t.location && (
+                    <span className="md:text-[12px] text-[10px] text-slate-600 flex items-center gap-1">
+                      <FaMapMarkerAlt /> {t.location}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-2">
+                 
+                    <Button
+                      onClick={() => handleEdit(t)}
+                     
+                      className="
+                          md:px-3 px-2 md:py-1.5 py-0.5  md:rounded-md rounded-[6px] bg-[#3f85ed] text-white
+                        hover:bg-[#2E74E0] active:scale-[.99] transition
+                        flex items-center gap-2
+                      "
+                    >
+                      <FaEdit className="md:w-[12px] w-[9px] md:h-[12px] h-[9px]" />
+                      <span className="text-[12px] font-Gordita-Medium md:block hidden">
+                        Edit
+                      </span>
+                    </Button>
+                 
+
+                 
+                    <Button
+                      onClick={() => t.id && handleDelete(t.id)}
+                     
+                      className="
+                        md:px-3 px-2 md:py-1.5 py-0.5 md:rounded-md rounded-[6px] bg-red-500 text-white
+                        hover:bg-red-600 active:scale-[.99] transition
+                        flex items-center gap-2
+                      "
+                    >
+                      <FaTrash className="md:w-[12px] w-[9px] md:h-[12px] h-[9px]" />
+                      <span className="text-[12px] md:block hidden font-Gordita-Medium">
+                        Delete
+                      </span>
+                    </Button>
+                 
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+
+
+      {filteredData?.length > pageSize && (
+        <div className="flex items-center justify-center mx-auto mb-[20px]">
+          <PaginationControls
+            currentPage={currentpage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            pageSize={pageSize}
+            onPageSizeChange={handlePageSizeChange}
+          />
+        </div>
+      )}
+
+     
       {openModal && (
         <Drawer
           open={openModal}
           handleDrawerToggle={() => setOpenModal(false)}
           closeIconCls="text-black"
           openVariant="right"
-          panelCls="w-[90%] sm:w-[95%] lg:w-[calc(100%-190px)] shadow-xl"
+          panelCls="w-[90%] md:w-[80%] lg:w-[calc(90%-190px)] shadow-2xl"
           overLayCls="bg-gray-700 bg-opacity-40"
         >
-          {loading && (
-            <div className="inset-0 z-[9999] backdrop-blur-[0.5px] fixed bg-white bg-opacity-50 flex justify-center items-center cursor-wait">
-              <Image src={`/icons/loader.svg`} alt="Loading" width={100} height={100} />
+          <div className="flex flex-col gap-3 w-full">
+            <div className="flex items-center gap-2 md:px-10 px-4 py-2">
+              <div className="h-10 w-10 rounded-lg bg-purple-50 text-purple-600 grid place-items-center ring-1 ring-purple-100">
+                <FaQuoteLeft />
+              </div>
+              <h1 className="text-gray-800 md:text-2xl text-xl font-Gordita-Bold">
+                {updateId ? "Edit Testimonial" : "Add Testimonial"}
+              </h1>
             </div>
-          )}
-          <CustomForm {...formData} />
+
+            <div className="text-red-500 font-Gordita-Light text-[12px] md:px-10 px-4">
+              All fields are required
+            </div>
+            {loading && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/70 z-50">
+                <Loader />
+              </div>
+            )}
+
+            <form
+              className="flex flex-col md:gap-3 gap-1 w-full bg-gray-100 md:px-8 px-2 md:py-6  py-3 rounded-[10px] shadow-custom"
+              onSubmit={handleSubmit}
+            >
+              <div className="w-full grid grid-cols-1 md:grid-cols-2 md:px-10 px-4 md:gap-y-4 gap-y-3 gap-x-5">
+                <CustomInput
+                  name="name"
+                  id="name"
+                  className="py-0 px-3 placeholder:text-gray-500"
+                  labelCls="font-Gordita-Medium label-text text-[#000000]"
+                  required
+                  placeholder="Enter name"
+                  value={testimonial.name}
+                  label="Name"
+                  type="text"
+                  onChange={(e) =>
+                    handleFormChange(e.target.name ?? "", e.target.value ?? "")
+                  }
+                />
+
+                <CustomInput
+                  name="location"
+                  id="location"
+                  className="py-0 px-3 placeholder:text-gray-500"
+                  labelCls="font-Gordita-Medium label-text text-[#000000]"
+                  required
+                  placeholder="Enter location"
+                  value={testimonial.location}
+                  label="Location"
+                  type="text"
+                  onChange={(e) =>
+                    handleFormChange(e.target.name ?? "", e.target.value ?? "")
+                  }
+                />
+
+                <SingleSelect
+                  name="category"
+                  label="Category"
+                  labelCls="font-Gordita-Medium label-text text-[#000000]"
+                  rootCls="px-1 py-1 w-full rounded-[6px]"
+                 
+                  type="single-select"
+                  
+                  options={CATEGORY_OPTIONS}
+                  
+                  selectedOption={
+                    CATEGORY_OPTIONS.find(
+                      (item) => item.category === testimonial.category
+                    ) || { id: 1, category: "furniture" }
+                  }
+                  optionsInterface={{
+                    isObj: true,
+                    displayKey: "category",
+                  }}
+                  handleChange={(name, value) => handleSelectChange(value)}
+                />
+
+                <SingleSelect
+                  name="rating"
+                  label="Rating"
+                  labelCls="font-Gordita-Medium label-text text-[#000000]"
+                  rootCls="px-1 md:py-2 py-1 w-full rounded-[6px] "
+                  selectedOption={String(testimonial.rating || "")}
+                  type="single-select"
+                
+                  handleChange={(name: string, val: any) =>
+                    handleFormChange(name, Number(val))
+                  }
+                  optionsInterface={{ isObj: false }}
+                  options={ratingOptions}
+                />
+
+                <FileInput
+                  name="userimage"
+                  label="User Image"
+                  labelCls="font-Gordita-Medium label-text text-[#000000]"
+                  type="file"
+                  folderName="testimonials"
+                  required
+                  initialFileUrl={testimonial.userimage}
+                  onFileChange={(url) => handleUpload(url)}
+                />
+
+                <CustomInput
+                  name="content"
+                  id="content"
+                  label="Content"
+                  className="py-1 px-3 placeholder:text-gray-500 text-[14px] min-h-[120px]"
+                  labelCls="font-Gordita-Medium label-text text-[#000000]"
+                  placeholder="Enter testimonial content"
+                  required
+                  rootCls="col-span-1 md:col-span-2"
+                  value={testimonial.content}
+                  type="textarea"
+                  onChange={(e) =>
+                    handleFormChange(e.target.name ?? "", e.target.value ?? "")
+                  }
+                />
+                
+                  <div className="col-span-1 md:col-span-1 w-full">
+            <ImageUploader
+              label="Upload Testimonial Images"
+              onFilesChange={(files: string[]) =>
+                handleimageUpload("testimonialImages", files)
+              }
+              maxFiles={5}
+              maxFileSize={10}
+              folderName="testimonialImages"
+              acceptedFormats={["image/png", "image/jpg", "image/jpeg"]}
+              outerCls="border-blue-200 border-2 rounded-md p-3 bg-blue-50"
+              initialUrls={testimonial.testimonialImages || []}
+              buttonCls="bg-[#5297ff] hover:bg-blue-600 transition-colors"
+            />
+          </div>
+
+          <div className="col-span-1 md:col-span-1 w-full">
+            <ImageUploader
+              label="Upload Testimonial Videos"
+              onFilesChange={(files: string[]) =>
+                handleimageUpload("testimonialVideos", files)
+              }
+              maxFiles={2}
+              maxFileSize={50}
+              folderName="testimonialVideos"
+              acceptedFormats={["video/mp4", "video/mov"]}
+              outerCls="border-green-200 border-2 rounded-md p-3 bg-green-50"
+              initialUrls={testimonial.testimonialVideos || []}
+              buttonCls="bg-green-500 hover:bg-green-600 transition-colors"
+            />
+          </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 md:mt-6 mt-3 md:px-10 px-4 md:mb-6 mb-3">
+                <Button
+                  className="text-slate-700 md:px-4 px-2  md:py-2 py-1 md:text-[16px] text-[12px] rounded-md bg-slate-100 border border-slate-300 hover:bg-slate-50 active:scale-[.99] transition font-Gordita-Medium"
+                  type="button"
+                  onClick={handleReset}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  className="text-white md:px-4 px-2  md:py-2 py-1 md:text-[16px] text-[12px]  rounded-md bg-[#3586FF] hover:bg-[#2E74E0] shadow-[0_6px_20px_rgba(53,134,255,0.35)] active:scale-[.99] transition font-Gordita-Medium"
+                  type="submit"
+                >
+                  Submit
+                </Button>
+              </div>
+            </form>
+          </div>
         </Drawer>
       )}
     </div>

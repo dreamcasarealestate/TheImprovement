@@ -19,10 +19,10 @@ import {
 } from "react-icons/md";
 import toast from "react-hot-toast";
 import CustomInput from "@/common/FormElements/CustomInput";
-import {
-  stateOptions,
-  RadioButton,
-} from "@/components/Products/components/SubServices/InteriorsComponent/interiorsCalculator";
+// import {
+//   stateOptions,
+//   RadioButton,
+// } from "@/components/Products/components/SubServices/InteriorsComponent/interiorsCalculator";
 import ThemeLoader from "@/common/ThemeLoader";
  enum ServiceCategory {
   RealEstate = "RealEstate",
@@ -296,7 +296,7 @@ const PaintingCostEstimator: React.FC = () => {
         <h2 className="font-Gordita-Medium label-text text-[#5297ff] mb-2">
           Select the size of your house
         </h2>
-        <div className="flex flex-row md:gap-3 gap-2">
+        {/* <div className="flex flex-row md:gap-3 gap-2">
           {["1", "2", "3", "4", "5"].map((bhk) => (
             <RadioButton
               key={bhk}
@@ -310,7 +310,7 @@ const PaintingCostEstimator: React.FC = () => {
               {bhk} BHK
             </RadioButton>
           ))}
-        </div>
+        </div> */}
         {errors.bhkType && (
           <p className="text-red-500 text-sm mt-1">{errors.bhkType}</p>
         )}

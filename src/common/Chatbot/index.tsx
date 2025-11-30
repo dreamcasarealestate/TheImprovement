@@ -24,7 +24,7 @@ const SUGGESTIONS = [
   "Give Vastu tips for a 2BHK flat (short)",
   "Estimate painting cost for 3BHK, washable finish",
   "What’s the difference between carpet, built-up & super area?",
-  "How does OneCasa track construction progress daily?",
+  "How does TheImprovement track construction progress daily?",
   "Share your interiors packages for 2BHK",
 ];
 

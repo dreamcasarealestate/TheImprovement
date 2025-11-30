@@ -14,6 +14,7 @@ import {
   FiLogOut,
   FiChevronDown,
 } from "react-icons/fi";
+import { LuUsers } from "react-icons/lu";
 import { FaHome, FaBuilding } from "react-icons/fa";
 import { MdReviews } from "react-icons/md";
 import { LuCheckCircle } from "react-icons/lu";
@@ -97,33 +98,24 @@ const Avatar: React.FC<AvatarProps> = ({ showAbove = true }) => {
   const menuItems = [
     { icon: <FiGrid size={14} />, label: "Dashboard", href: "/user/dashboard" },
     { icon: <FiUser size={14} />, label: "My Profile", href: "/user/profile" },
-    {
-      icon: <FaHome size={14} />,
-      label: "Properties",
-      href: "/user/properties",
-    },
-    {
-      icon: <FaBuilding size={14} />,
-      label: "Company Property",
-      href: "/user/company-property",
-    },
-    { icon: <FiShoppingCart size={14} />, label: "Cart", href: "/cart" },
-    { icon: <FiHeart size={14} />, label: "Wishlist", href: "/user/wishlist" },
+
     {
       icon: <FiTool size={14} />,
       label: "Custom Builder",
       href: "/user/custom-builder",
     },
     {
+      icon: <LuUsers className="text-[16px]" />,
+      label: "CRM",
+      href: "/user/crm",
+    },
+
+    {
       icon: <MdReviews size={14} />,
       label: "Testimonials",
       href: "/user/testimonials",
     },
-    {
-      icon: <LuCheckCircle size={14} />,
-      label: "Referral Progress",
-      href: "/user/referralprogress",
-    },
+
     { icon: <FiSettings size={14} />, label: "Settings", href: "#" },
     { icon: <FiCreditCard size={14} />, label: "Wallet", href: "#" },
   ];
@@ -155,8 +147,9 @@ const Avatar: React.FC<AvatarProps> = ({ showAbove = true }) => {
           </div>
         )}
         <FiChevronDown
-          className={`text-gray-500 transition-transform duration-200 ${isOpen ? "rotate-180" : ""
-            }`}
+          className={`text-gray-500 transition-transform duration-200 ${
+            isOpen ? "rotate-180" : ""
+          }`}
           size={16}
         />
       </div>
